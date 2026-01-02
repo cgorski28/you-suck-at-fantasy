@@ -4,6 +4,9 @@ import type {
   OptimalLineup,
   PlayerSlotAssignment,
   LineupSwap,
+  LineupSwapV2,
+  SimpleSwap,
+  ChainSwap,
 } from './types';
 import { SLOT_ELIGIBILITY, BENCH_SLOTS } from './types';
 
@@ -96,11 +99,6 @@ export function computeOptimalLineup(
   const requirements = parseSlotRequirements(league);
   const slots = sortSlotsByRestrictiveness(expandSlots(requirements));
 
-  // Debug logging
-  console.log('=== DEBUG: Optimal Lineup Computation ===');
-  console.log('Slot requirements:', JSON.stringify(requirements, null, 2));
-  console.log('Total expanded slots:', slots.length);
-
   // Filter to players with positive points (bench players with 0 can be ignored per spec)
   // But starters with 0 must be considered
   const availablePlayers = roster.filter((p) => {
@@ -120,19 +118,8 @@ export function computeOptimalLineup(
     return a.id - b.id;
   });
 
-  console.log('Available players count:', availablePlayers.length);
-  console.log('Sorted players (top 5):', sortedPlayers.slice(0, 5).map(p => ({
-    name: p.fullName,
-    points: p.totalPoints,
-    eligiblePositions: p.eligiblePositions,
-    rosteredPosition: p.rosteredPosition,
-  })));
-
   // Use backtracking to find optimal assignment
   const bestAssignment = findOptimalAssignment(sortedPlayers, slots);
-
-  console.log('Best assignment count:', bestAssignment.length);
-  console.log('Best assignment total:', bestAssignment.reduce((sum, a) => sum + a.points, 0));
 
   return {
     starters: bestAssignment,
@@ -260,24 +247,9 @@ export function calculateSwaps(
     .filter(p => BENCH_SLOTS.includes(p.rosteredPosition) && p.totalPoints > 0)
     .sort((a, b) => b.totalPoints - a.totalPoints);
 
-  console.log('=== DEBUG: Swap Calculation (New Logic) ===');
-  console.log('Bench players with points:', benchPlayers.map(p => ({
-    name: p.fullName,
-    points: p.totalPoints,
-    positions: p.eligiblePositions,
-  })));
-  console.log('Actual lineup:', actualLineup.map(a => ({
-    name: a.player.fullName,
-    slot: a.slot,
-    points: a.points,
-  })));
-
   for (const benchPlayer of benchPlayers) {
     // Find slots this player is eligible for
     const eligibleSlots = getEligibleSlotsForPlayer(benchPlayer);
-
-    console.log(`\n--- Checking bench player: ${benchPlayer.fullName} (${benchPlayer.totalPoints} pts)`);
-    console.log(`  Eligible slots: ${eligibleSlots.join(', ')}`);
 
     // Find the lowest-scoring starter in those eligible slots
     let worstStarter: PlayerSlotAssignment | null = null;
@@ -305,8 +277,6 @@ export function calculateSwaps(
         continue;
       }
 
-      console.log(`  Considering: ${starter.player.fullName} at ${starter.slot} (${starter.points} pts)`);
-
       // Keep track of the worst (lowest scoring) starter we can replace
       if (worstStarter === null || starter.points < worstStarter.points) {
         worstStarter = starter;
@@ -317,8 +287,6 @@ export function calculateSwaps(
       const pointsGained = benchPlayer.totalPoints - worstStarter.points;
       const slotKey = `${worstStarter.slot}-${worstStarter.player.id}`;
 
-      console.log(`  -> SWAP: Replace ${worstStarter.player.fullName} at ${worstStarter.slot} (+${pointsGained.toFixed(1)} pts)`);
-
       usedSlots.add(slotKey);
       usedStarterIds.add(worstStarter.player.id);
 
@@ -328,8 +296,6 @@ export function calculateSwaps(
         pointsGained,
         slot: worstStarter.slot,
       });
-    } else {
-      console.log(`  -> No valid swap found`);
     }
   }
 
@@ -340,4 +306,184 @@ export function calculateSwaps(
   });
 
   return swaps;
+}
+
+/**
+ * Build swap chains by comparing actual lineup to optimal lineup
+ *
+ * This approach correctly handles chain swaps where:
+ * 1. A bench player takes a slot
+ * 2. That displaces someone who moves to another slot
+ * 3. Which may displace someone else, and so on...
+ * 4. Until finally someone goes to bench
+ *
+ * Example 3-step chain:
+ * Vidal (Bench) → RB ← Charbonnet → FLEX ← Jeudy → WR ← St. Brown (Bench)
+ */
+export function buildSwapChains(
+  actualLineup: PlayerSlotAssignment[],
+  optimalLineup: OptimalLineup,
+  fullRoster: ESPNBoxscorePlayer[]
+): LineupSwapV2[] {
+  // Step 1: Build maps of player ID -> slot for actual and optimal
+  const actualSlotMap = new Map<number, string>();
+  for (const assignment of actualLineup) {
+    actualSlotMap.set(assignment.player.id, assignment.slot);
+  }
+
+  const optimalSlotMap = new Map<number, string>();
+  for (const assignment of optimalLineup.starters) {
+    optimalSlotMap.set(assignment.player.id, assignment.slot);
+  }
+
+  // Step 2: Categorize all player changes
+  interface PlayerChange {
+    player: ESPNBoxscorePlayer;
+    actualSlot: string;
+    optimalSlot: string;
+  }
+
+  const benchToStarter: PlayerChange[] = [];
+  const starterToBench: PlayerChange[] = [];
+  const slotChanges: PlayerChange[] = [];
+
+  for (const player of fullRoster) {
+    const actualSlot = actualSlotMap.get(player.id) ?? 'Bench';
+    const optimalSlot = optimalSlotMap.get(player.id) ?? 'Bench';
+
+    const isActualBench = actualSlot === 'Bench' || BENCH_SLOTS.includes(actualSlot);
+    const isOptimalBench = optimalSlot === 'Bench' || BENCH_SLOTS.includes(optimalSlot);
+
+    if (isActualBench && !isOptimalBench) {
+      benchToStarter.push({ player, actualSlot: 'Bench', optimalSlot });
+    } else if (!isActualBench && isOptimalBench) {
+      starterToBench.push({ player, actualSlot, optimalSlot: 'Bench' });
+    } else if (!isActualBench && !isOptimalBench && actualSlot !== optimalSlot) {
+      slotChanges.push({ player, actualSlot, optimalSlot });
+    }
+  }
+
+  // Helper function to trace a chain from a starting slot to someone who goes to bench
+  // Returns the full chain of slot changes and the final benched player
+  function traceChainToEnd(
+    startSlot: string,
+    usedSlotChanges: Set<number>,
+    usedStarterToBench: Set<number>
+  ): { chain: PlayerChange[], benchedPlayer: PlayerChange | null } {
+    const chain: PlayerChange[] = [];
+    let currentSlot = startSlot;
+    const maxDepth = 10; // Prevent infinite loops
+
+    for (let depth = 0; depth < maxDepth; depth++) {
+      // First, check if there's a starterToBench at currentSlot
+      const benchedPlayer = starterToBench.find(
+        stb => stb.actualSlot === currentSlot && !usedStarterToBench.has(stb.player.id)
+      );
+      if (benchedPlayer) {
+        return { chain, benchedPlayer };
+      }
+
+      // If not, look for a slotChange that vacated currentSlot
+      const slotChange = slotChanges.find(
+        sc => sc.actualSlot === currentSlot && !usedSlotChanges.has(sc.player.id)
+      );
+      if (slotChange) {
+        chain.push(slotChange);
+        usedSlotChanges.add(slotChange.player.id);
+        currentSlot = slotChange.optimalSlot;
+      } else {
+        // Dead end - no slotChange and no starterToBench at this slot
+        return { chain, benchedPlayer: null };
+      }
+    }
+
+    return { chain, benchedPlayer: null };
+  }
+
+  // Step 3: Build chains for each benchToStarter
+  const swaps: LineupSwapV2[] = [];
+  const usedSlotChanges = new Set<number>();
+  const usedStarterToBench = new Set<number>();
+
+  // Sort benchToStarter by points descending for deterministic processing
+  benchToStarter.sort((a, b) => b.player.totalPoints - a.player.totalPoints);
+
+  for (const bts of benchToStarter) {
+    const targetSlot = bts.optimalSlot;
+
+    // Trace the full chain from targetSlot to someone who goes to bench
+    const { chain, benchedPlayer } = traceChainToEnd(targetSlot, usedSlotChanges, usedStarterToBench);
+
+    if (benchedPlayer) {
+      usedStarterToBench.add(benchedPlayer.player.id);
+      const pointsGained = bts.player.totalPoints - benchedPlayer.player.totalPoints;
+
+      if (chain.length > 0) {
+        // Chain swap: there were intermediate moves
+        // But first, check if we can simplify: if the bench player is eligible for the
+        // benched player's original slot, we can show it as a simple swap instead.
+        // This is more intuitive: "Start Vidal in FLEX instead of Charbonnet" vs
+        // "Move Kamara RB→FLEX (replaces Charbonnet), Start Vidal in RB"
+        const benchedPlayerOriginalSlot = benchedPlayer.actualSlot;
+        const benchPlayerEligibleForBenchedSlot = isPlayerEligibleForSlot(
+          bts.player,
+          SLOT_ELIGIBILITY[benchedPlayerOriginalSlot] || [benchedPlayerOriginalSlot]
+        );
+
+        if (benchPlayerEligibleForBenchedSlot) {
+          // Simplify to a direct swap - the chain is just internal rearrangement
+          const simpleSwap: SimpleSwap = {
+            type: 'simple',
+            benchPlayer: bts.player,
+            benchedPlayer: benchedPlayer.player,
+            slot: benchedPlayerOriginalSlot,
+            pointsGained,
+          };
+
+          swaps.push(simpleSwap);
+        } else {
+          // True chain swap: bench player can't directly take the benched player's slot
+          // For display, show the LAST intermediate move (the one that directly displaces the benched player)
+          const lastMove = chain[chain.length - 1];
+
+          const chainSwap: ChainSwap = {
+            type: 'chain',
+            benchPlayer: bts.player,
+            targetSlot: lastMove.actualSlot,  // Use the slot that the last move vacates
+            intermediateMove: {
+              player: lastMove.player,
+              fromSlot: lastMove.actualSlot,
+              toSlot: lastMove.optimalSlot,
+            },
+            benchedPlayer: benchedPlayer.player,
+            pointsGained,
+          };
+
+          swaps.push(chainSwap);
+        }
+      } else {
+        // Simple swap: bench player directly replaces someone who went to bench
+        const simpleSwap: SimpleSwap = {
+          type: 'simple',
+          benchPlayer: bts.player,
+          benchedPlayer: benchedPlayer.player,
+          slot: targetSlot,
+          pointsGained,
+        };
+
+        swaps.push(simpleSwap);
+      }
+    }
+  }
+
+  // Filter out swaps with 0 or negative points gained (no actual improvement)
+  const meaningfulSwaps = swaps.filter(swap => swap.pointsGained > 0);
+
+  // Sort by points gained descending
+  meaningfulSwaps.sort((a, b) => {
+    if (b.pointsGained !== a.pointsGained) return b.pointsGained - a.pointsGained;
+    return a.benchPlayer.id - b.benchPlayer.id;
+  });
+
+  return meaningfulSwaps;
 }

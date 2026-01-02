@@ -256,32 +256,32 @@ export function getWeekRoastHeadline(pointsMissed: number, week: number): string
 
   if (pointsMissed > 40) {
     return pickOne([
-      `You left ${pointsMissed.toFixed(2)} points on the bench. That's embarrassing.`,
-      `${pointsMissed.toFixed(2)} points missed. Did you even check your lineup?`,
-      `A brutal ${pointsMissed.toFixed(2)} points left on the bench.`,
+      `Did you even check your lineup this week?`,
+      `This is the kind of mismanagement that loses championships.`,
+      `Your bench players are begging for playing time.`,
     ], hash);
   }
   if (pointsMissed > 25) {
     return pickOne([
-      `You left ${pointsMissed.toFixed(2)} points on the bench.`,
-      `${pointsMissed.toFixed(2)} points of wasted potential.`,
-      `${pointsMissed.toFixed(2)} points sitting there, unused.`,
+      `That's a lot of wasted potential sitting on your bench.`,
+      `Your lineup decisions need some serious work.`,
+      `Those bench points could have changed everything.`,
     ], hash);
   }
   if (pointsMissed > 15) {
     return pickOne([
-      `${pointsMissed.toFixed(2)} points left on the bench.`,
-      `${pointsMissed.toFixed(2)} points missed this week.`,
-      `You left ${pointsMissed.toFixed(2)} points behind.`,
+      `Not your finest lineup management work.`,
+      `A few better decisions and this looks different.`,
+      `Your bench was quietly outperforming your starters.`,
     ], hash);
   }
   if (pointsMissed > 8) {
     return pickOne([
-      `${pointsMissed.toFixed(2)} points missed.`,
-      `A modest ${pointsMissed.toFixed(2)} points left on the bench.`,
+      `Room for improvement in the lineup department.`,
+      `A modest oversight, but oversights add up.`,
     ], hash);
   }
-  return `${pointsMissed.toFixed(2)} points missed. Minor, but it counts.`;
+  return `Minor, but every point counts in fantasy.`;
 }
 
 export function getBlownWinMessage(margin: number, week: number): string {

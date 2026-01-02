@@ -85,7 +85,7 @@ export function TeamSelect({
           id="team"
           value={selectedTeamId}
           onChange={(e) => setSelectedTeamId(e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 bg-white"
         >
           <option value="">Choose a team...</option>
           {leagueData.teams.map((team) => (
@@ -108,7 +108,7 @@ export function TeamSelect({
           type="button"
           onClick={handleGenerate}
           disabled={isLoading || !selectedTeamId}
-          className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+          className="flex-1 py-3 px-6 bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
         >
           {isLoading ? 'Generating...' : 'Generate Report'}
         </button>

@@ -93,12 +93,39 @@ export interface OptimalLineup {
   totalPoints: number;
 }
 
+// Legacy type - kept for backward compatibility during migration
 export interface LineupSwap {
   benchPlayer: ESPNBoxscorePlayer;
   startedPlayer: ESPNBoxscorePlayer;
   pointsGained: number;
   slot: string; // The slot where the swap should happen (where startedPlayer was)
 }
+
+// Simple swap - bench player directly replaces a starter who goes to bench
+export interface SimpleSwap {
+  type: 'simple';
+  benchPlayer: ESPNBoxscorePlayer;
+  benchedPlayer: ESPNBoxscorePlayer;
+  slot: string;
+  pointsGained: number;
+}
+
+// Chain swap - requires intermediate rearrangement first
+// e.g., Move FLEX player to WR, then bring bench player into FLEX
+export interface ChainSwap {
+  type: 'chain';
+  benchPlayer: ESPNBoxscorePlayer;
+  targetSlot: string;  // Where bench player ends up (e.g., "FLEX")
+  intermediateMove: {
+    player: ESPNBoxscorePlayer;
+    fromSlot: string;  // e.g., "FLEX"
+    toSlot: string;    // e.g., "WR"
+  };
+  benchedPlayer: ESPNBoxscorePlayer;  // Who ultimately goes to bench
+  pointsGained: number;
+}
+
+export type LineupSwapV2 = SimpleSwap | ChainSwap;
 
 // Display-friendly slot names
 export const SLOT_DISPLAY_NAMES: Record<string, string> = {
@@ -120,7 +147,7 @@ export interface WeekResult {
   pointsMissed: number;
   isBlownWin: boolean;
   blownWinMargin: number;
-  swaps: LineupSwap[];
+  swaps: LineupSwapV2[];
 }
 
 export interface ReportData {

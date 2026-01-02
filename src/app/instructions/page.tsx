@@ -63,7 +63,7 @@ export default function InstructionsPage() {
             <div className="space-y-6">
               {/* Step 1 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   1
                 </div>
                 <div className="flex-1">
@@ -87,7 +87,7 @@ export default function InstructionsPage() {
 
               {/* Step 2 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   2
                 </div>
                 <div className="flex-1">
@@ -109,7 +109,7 @@ export default function InstructionsPage() {
 
               {/* Step 3 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   3
                 </div>
                 <div className="flex-1">
@@ -128,7 +128,7 @@ export default function InstructionsPage() {
 
               {/* Step 4 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   4
                 </div>
                 <div className="flex-1">
@@ -144,7 +144,7 @@ export default function InstructionsPage() {
 
               {/* Step 5 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   5
                 </div>
                 <div className="flex-1">
@@ -176,7 +176,7 @@ export default function InstructionsPage() {
 
               {/* Step 6 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
                   6
                 </div>
                 <div className="flex-1">
@@ -217,7 +217,7 @@ export default function InstructionsPage() {
           <div className="px-6 py-6 border-t border-gray-100">
             <Link
               href="/"
-              className="block w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors text-center"
+              className="block w-full py-3 px-6 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors text-center"
             >
               Back to Analyzer
             </Link>

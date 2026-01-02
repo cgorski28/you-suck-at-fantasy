@@ -142,7 +142,7 @@ export function Report({ report, onAnalyzeAnotherTeam, onChangeLeague }: ReportP
       <div className="mt-8 mb-12 space-y-3">
         <button
           onClick={onAnalyzeAnotherTeam}
-          className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+          className="w-full py-3 px-6 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
         >
           Analyze Another Team
         </button>

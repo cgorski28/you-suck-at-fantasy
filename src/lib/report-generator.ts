@@ -14,7 +14,7 @@ import {
 import {
   computeOptimalLineup,
   getActualLineup,
-  calculateSwaps,
+  buildSwapChains,
 } from './optimal-lineup';
 
 interface GenerateReportParams {
@@ -58,10 +58,6 @@ export async function generateReport(
   let playoffLosses = 0;
   let worstWeek: WeekResult | null = null;
 
-  // Debug: Log league settings
-  console.log('=== DEBUG: League Settings ===');
-  console.log('rosterSettings:', JSON.stringify(leagueSettings.rosterSettings, null, 2));
-
   for (let week = 1; week <= totalWeeks; week++) {
     const boxscores = boxscoresByWeek.get(week);
     if (!boxscores) continue;
@@ -85,21 +81,7 @@ export async function generateReport(
 
     // Skip if scores are missing (bye week or incomplete matchup)
     if (ourScore === undefined || ourScore === null || opponentScore === undefined || opponentScore === null) {
-      console.log(`Skipping week ${week}: missing scores (ourScore: ${ourScore}, opponentScore: ${opponentScore})`);
       continue;
-    }
-
-    // Debug: Log roster data for week 1
-    if (week === 1) {
-      console.log('=== DEBUG: Week 1 Roster ===');
-      console.log('Roster length:', ourRoster.length);
-      console.log('Sample player:', JSON.stringify(ourRoster[0], null, 2));
-      console.log('All players positions:', ourRoster.map(p => ({
-        name: p.fullName,
-        rosteredPosition: p.rosteredPosition,
-        eligiblePositions: p.eligiblePositions,
-        totalPoints: p.totalPoints,
-      })));
     }
 
     // Compute optimal lineup
@@ -132,10 +114,10 @@ export async function generateReport(
 
     if (isBlownWin) blownWins++;
 
-    // Calculate swaps
+    // Calculate swaps (using chain-aware algorithm)
     const swaps =
       pointsMissed > 0
-        ? calculateSwaps(actualLineup, optimalLineup, ourRoster)
+        ? buildSwapChains(actualLineup, optimalLineup, ourRoster)
         : [];
 
     const weekResult: WeekResult = {

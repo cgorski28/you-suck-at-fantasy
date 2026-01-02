@@ -83,7 +83,7 @@ export function LeagueForm({
           onChange={(e) => setLeagueId(e.target.value)}
           required
           placeholder="e.g., 12345678"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400"
         />
         <p className="mt-1 text-xs text-gray-500">
           Find this in your ESPN league URL: espn.com/football/league?leagueId=
@@ -104,7 +104,7 @@ export function LeagueForm({
           value={seasonId}
           onChange={(e) => setSeasonId(e.target.value)}
           placeholder={`Default: ${currentYear}`}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400"
         />
       </div>
 
@@ -142,7 +142,7 @@ export function LeagueForm({
                 value={espnS2}
                 onChange={(e) => setEspnS2(e.target.value)}
                 placeholder="Your espn_s2 cookie value"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400 text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400 text-sm"
               />
             </div>
 
@@ -159,7 +159,7 @@ export function LeagueForm({
                 value={swid}
                 onChange={(e) => setSwid(e.target.value)}
                 placeholder="Your SWID cookie value (includes curly braces)"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 placeholder-gray-400 text-sm"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400 text-sm"
               />
             </div>
           </div>
@@ -169,9 +169,24 @@ export function LeagueForm({
       <button
         type="submit"
         disabled={isLoading || !leagueId}
-        className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+        className="w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
       >
-        {isLoading ? 'Loading...' : 'Load League'}
+        {isLoading ? (
+          <>
+            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Loading...
+          </>
+        ) : (
+          <>
+            Get Roasted
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </>
+        )}
       </button>
     </form>
   );
