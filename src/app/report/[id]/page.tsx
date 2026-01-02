@@ -22,17 +22,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = `${report.totalPointsLeftOnBench.toFixed(1)} points left on bench, ${report.blownWins} blown win${report.blownWins !== 1 ? 's' : ''}. ${verdict}`;
 
   return {
-    title: `${report.teamName} Fantasy Roast | YouSuckAtFantasyFootball.com`,
+    title: `${report.teamName} Fantasy Season Report | YouSuckAtFantasyFootball.com`,
     description,
     openGraph: {
-      title: `${report.teamName} Fantasy Roast`,
+      title: `${report.teamName} Fantasy Season Report`,
       description,
       images: [`/api/og/${id}`],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${report.teamName} Fantasy Roast`,
+      title: `${report.teamName} Fantasy Season Report`,
       description,
       images: [`/api/og/${id}`],
     },

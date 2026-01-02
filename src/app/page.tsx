@@ -179,6 +179,14 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Desktop-only notice */}
+            <p className="text-sm text-gray-500 flex items-center gap-2">
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Requires desktop &mdash; you&apos;ll need browser dev tools to get your ESPN credentials
+            </p>
+
             {/* Sample Preview Card - hidden on small screens, shown on lg+ */}
             <div className="hidden lg:block relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-red-200 to-red-100 rounded-2xl blur-xl opacity-50"></div>
@@ -239,15 +247,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Mobile Preview Card - shown only on smaller screens */}
-        <div className="lg:hidden mt-12 flex justify-center">
-          <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-r from-red-200 to-red-100 rounded-2xl blur-xl opacity-50"></div>
-            <div className="relative">
-              <SampleRoastCard />
-            </div>
-          </div>
-        </div>
       </main>
 
       {/* Footer */}
