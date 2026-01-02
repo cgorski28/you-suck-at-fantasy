@@ -30,7 +30,7 @@ export function LeagueForm({
   const [swid, setSwid] = useState('');
   const [showPrivateFields, setShowPrivateFields] = useState(false);
 
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2025
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
