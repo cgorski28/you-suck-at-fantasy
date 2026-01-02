@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateReport } from '@/lib/report-generator';
-import type { ESPNCredentials } from '@/lib/types';
+import { saveReport } from '@/lib/report-storage';
+import type { ESPNCredentials, ReportResponse } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +38,15 @@ export async function POST(request: NextRequest) {
       playoffStartWeek: Number(playoffStartWeek),
     });
 
-    return NextResponse.json(report);
+    // Save report to Redis and get shareable ID
+    const shareId = await saveReport(report);
+
+    const response: ReportResponse = {
+      ...report,
+      shareId,
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error generating report:', error);
     return NextResponse.json(

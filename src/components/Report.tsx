@@ -9,9 +9,11 @@ import {
   getSeasonSummary,
 } from '@/lib/copy';
 import { WeeklySection } from './WeeklySection';
+import { SharePanel } from './SharePanel';
 
 interface ReportProps {
   report: ReportData;
+  shareId?: string;
   onAnalyzeAnotherTeam: () => void;
   onChangeLeague: () => void;
 }
@@ -22,7 +24,7 @@ function getOrdinal(n: number): string {
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
-export function Report({ report, onAnalyzeAnotherTeam, onChangeLeague }: ReportProps) {
+export function Report({ report, shareId, onAnalyzeAnotherTeam, onChangeLeague }: ReportProps) {
   const verdict = getVerdict(report);
   const benchSummary = getBenchPointsSummary(report.totalPointsLeftOnBench, report);
   const blownWinsSummary = getBlownWinsSummary(report.blownWins, report);
@@ -109,8 +111,13 @@ export function Report({ report, onAnalyzeAnotherTeam, onChangeLeague }: ReportP
         </div>
       </div>
 
+      {/* Share Panel */}
+      {shareId && (
+        <SharePanel report={report} shareId={shareId} />
+      )}
+
       {/* Regular Season Breakdown */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-6">
         <h3 className="text-lg font-semibold text-gray-900 px-1">
           Regular Season
         </h3>

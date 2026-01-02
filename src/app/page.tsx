@@ -5,7 +5,7 @@ import { LeagueForm, type LeagueCredentials } from '@/components/LeagueForm';
 import { TeamSelect } from '@/components/TeamSelect';
 import { Report } from '@/components/Report';
 import { LoadingState } from '@/components/LoadingState';
-import type { LeagueData, ReportData } from '@/lib/types';
+import type { LeagueData, ReportResponse } from '@/lib/types';
 
 type Step = 'form' | 'select' | 'loading' | 'report';
 
@@ -78,7 +78,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [leagueData, setLeagueData] = useState<LeagueData | null>(null);
   const [credentials, setCredentials] = useState<LeagueCredentials | null>(null);
-  const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [reportData, setReportData] = useState<ReportResponse | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Load saved credentials on mount
@@ -218,7 +218,7 @@ export default function Home() {
                     Find out how bad you really are at fantasy football
                   </h3>
                   <p className="text-gray-500 mt-1 text-sm">
-                    Enter your ESPN Fantasy Football league details to get your roast report.
+                    Enter your ESPN Fantasy Football league details to get your report.
                   </p>
                 </div>
                 <LeagueForm
@@ -351,6 +351,7 @@ export default function Home() {
         {reportData && (
           <Report
             report={reportData}
+            shareId={reportData.shareId}
             onAnalyzeAnotherTeam={handleAnalyzeAnotherTeam}
             onChangeLeague={handleChangeLeague}
           />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { LeagueData, ReportData } from '@/lib/types';
+import type { LeagueData, ReportResponse } from '@/lib/types';
 import type { LeagueCredentials } from './LeagueForm';
 
 interface TeamSelectProps {
@@ -11,7 +11,7 @@ interface TeamSelectProps {
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setReportData: (data: ReportData | null) => void;
+  setReportData: (data: ReportResponse | null) => void;
   onChangeLeague: () => void;
 }
 

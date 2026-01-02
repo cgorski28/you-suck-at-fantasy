@@ -168,6 +168,11 @@ export interface ReportData {
   worstWeek: WeekResult | null;
 }
 
+// Response from /api/report includes shareId for sharing
+export interface ReportResponse extends ReportData {
+  shareId: string;
+}
+
 // Slot eligibility mapping
 // These are the ESPN slot IDs and their eligible positions
 export const SLOT_ELIGIBILITY: Record<string, string[]> = {
