@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yousuckatfantasyfootball.com'),
   openGraph: {
     title: "YouSuckAtFantasyFootball.com",
-    description: "Welcome to Rock Bottom. Find out how many points you left on the bench and how bad you really are at fantasy football.",
+    description: "Find out how many points you left on the bench and how bad you really are at fantasy football.",
     siteName: "YouSuckAtFantasyFootball.com",
     locale: "en_US",
     type: "website",
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "YouSuckAtFantasyFootball.com",
-    description: "Welcome to Rock Bottom. Find out how many points you left on the bench and how bad you really are at fantasy football.",
-    images: ['https://yousuckatfantasyfootball.com/twitter-image?v=2'],
+    description: "Find out how many points you left on the bench and how bad you really are at fantasy football.",
+    images: ['https://yousuckatfantasyfootball.com/twitter-image?v=3'],
   },
 };
 
