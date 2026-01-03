@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "YouSuckAtFantasyFootball.com",
     description: "Find out how many points you left on the bench and how bad you really are at fantasy football.",
-    images: ['https://yousuckatfantasyfootball.com/twitter-image?v=3'],
+    images: ['https://yousuckatfantasyfootball.com/twitter-image?default=true'],
   },
 };
 
