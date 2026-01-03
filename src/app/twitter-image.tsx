@@ -65,17 +65,6 @@ export default async function Image() {
         >
           <span
             style={{
-              fontSize: 72,
-              fontWeight: 900,
-              color: '#111',
-              lineHeight: 1.1,
-            }}
-          >
-            Welcome to{' '}
-            <span style={{ color: '#dc2626' }}>Rock Bottom.</span>
-          </span>
-          <span
-            style={{
               fontSize: 28,
               color: '#6b7280',
               marginTop: 24,
