@@ -28,7 +28,7 @@ export function LeagueForm({
   const [seasonId, setSeasonId] = useState('');
   const [espnS2, setEspnS2] = useState('');
   const [swid, setSwid] = useState('');
-  const [showPrivateFields, setShowPrivateFields] = useState(false);
+  const [showPrivateFields, setShowPrivateFields] = useState(true);
 
   const currentYear = 2025
 
@@ -61,7 +61,12 @@ export function LeagueForm({
         SWID: swid,
       });
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      const hasCookies = espnS2 && swid;
+      if (!hasCookies) {
+        setError('Failed to load league. Most ESPN leagues are private — make sure you\'ve entered your espn_s2 and SWID cookies above. You\'ll need a desktop browser to get these.');
+      } else {
+        setError('Failed to load league. Double-check your League ID and make sure your cookies are correct and not expired.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -109,18 +114,35 @@ export function LeagueForm({
       </div>
 
       <div className="border-t border-gray-200 pt-4">
+        {/* Private league warning banner */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+          <div className="flex items-start gap-2">
+            <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <p className="text-sm font-semibold text-amber-800">
+                Most ESPN leagues are private
+              </p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                If your league isn&apos;t public, you&apos;ll need to add your ESPN cookies below. This requires a desktop browser.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={() => setShowPrivateFields(!showPrivateFields)}
           className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
         >
-          {showPrivateFields ? '▼' : '▶'} Private League? Add ESPN Cookies
+          {showPrivateFields ? '▼' : '▶'} {showPrivateFields ? 'Hide' : 'Show'} ESPN Cookie Fields
         </button>
 
         {showPrivateFields && (
-          <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <p className="text-xs text-gray-600 mb-3">
-              For private leagues, you need to provide your ESPN cookies.{' '}
+              <strong>Don&apos;t skip this step!</strong> For private leagues (most leagues), you need to provide your ESPN cookies.{' '}
               <Link
                 href="/instructions"
                 className="text-blue-600 hover:text-blue-800 underline font-medium"

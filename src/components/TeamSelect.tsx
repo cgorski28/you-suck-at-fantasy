@@ -56,7 +56,12 @@ export function TeamSelect({
       setReportData(data);
       onGenerateReport();
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      const hasCookies = credentials.espnS2 && credentials.SWID;
+      if (!hasCookies) {
+        setError('Failed to generate report. Your league is likely private — go back and add your ESPN cookies (espn_s2 and SWID). You\'ll need a desktop browser to get these.');
+      } else {
+        setError('Failed to generate report. Your cookies may have expired — try getting fresh ones from ESPN.');
+      }
     } finally {
       setIsLoading(false);
     }

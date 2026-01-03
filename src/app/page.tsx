@@ -180,12 +180,19 @@ export default function Home() {
             </div>
 
             {/* Desktop-only notice */}
-            <p className="text-sm text-gray-500 flex items-center gap-2">
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              Requires desktop &mdash; you&apos;ll need browser dev tools to get your ESPN credentials
-            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-blue-800">Desktop browser required</p>
+                  <p className="text-xs text-blue-700 mt-0.5">
+                    You&apos;ll need browser developer tools (Chrome/Firefox/Safari) to get your ESPN cookies. This won&apos;t work on mobile.
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Sample Preview Card - hidden on small screens, shown on lg+ */}
             <div className="hidden lg:block relative">
@@ -205,8 +212,7 @@ export default function Home() {
                   <span className="text-red-600 text-xs font-bold">!</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-red-800">Something went wrong</p>
-                  <p className="text-sm text-red-600 mt-0.5">{error}</p>
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               </div>
             )}
@@ -281,7 +287,10 @@ export default function Home() {
 
       <main className="flex-grow max-w-2xl mx-auto px-4 py-8 w-full">
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg px-4 py-3 flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-red-600 text-xs font-bold">!</span>
+            </div>
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
